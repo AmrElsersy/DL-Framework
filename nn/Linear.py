@@ -30,9 +30,10 @@ class Dense(Layer):
 
 	def calculate_local_grads(self,X):
 
-		self.local_grads['X'] = self.weights['W']
-		self.local_grads['W'] = X
-		self.local_grads['b'] = np.ones_like(self.weight['b'])
+		grads['X'] = self.weights['W']
+		grads['W'] = X
+		grads['b'] = np.ones_like(self.weight['b'])
+		return grads
 
 
 
