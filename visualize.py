@@ -3,6 +3,7 @@ import math
 from PIL import Image
 import matplotlib.pyplot as plt
 
+
 # ******************************************************************
 def img_viewer_examples(images, labels, prediction = None, size=0, greyscale=False):
     """
@@ -39,5 +40,39 @@ def img_viewer_examples(images, labels, prediction = None, size=0, greyscale=Fal
                     color=("green" if prediction[idx] == labels[idx] else "red"))
         else:
             ax.set_title(str(labels[idx].item()))
+
+def live_graph(trainingLoss, validationLoss = None):
+    """
+    Draw a graph for training and validation loss\n
+    [Required] trainingLoss: Training loss array,\t
+    [optional] validationLoss: Validation loss array,
+    """
+    style.use('fivethirtyeight')
+    fig = plt.figure()
+    ax1 = fig.add_subplot(1, 1, 1)
+    def animate(i):
+        ax1.cla()
+        if y1 is not None:
+            ax1.plot(np.array(range(len(y))) + 1, y1, label="Validation loss")
+            print('Epoch: {} \tTraining Loss: {:.6f} \tValidation Loss: {:.6f}'.format(len(y), y[-1], y1[-1]))
+        else:
+            print('Epoch: {} \tTraining Loss: {:.6f}'.format(len(y), y[-1]))
+        ax1.plot(np.array(range(len(y))) + 1, y, label="Training loss")
+        plt.legend(loc='upper right')
+    ani = animation.FuncAnimation(fig, animate, interval=1000)
+    plt.tight_layout()
+    plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
 
 
