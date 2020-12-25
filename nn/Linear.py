@@ -28,7 +28,7 @@ class Dense(Layer):
 		self.weights_global_grads = {'W': dW, 'b': db}
 		return dX
 
-	def Local_grad(self,X):
+	def calculate_local_grads(self,X):
 
 		self.local_grads['X'] = self.weights['W']
 		self.local_grads['W'] = X
