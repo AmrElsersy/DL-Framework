@@ -56,7 +56,7 @@ class Function:
 class Layer(Function):
     def __init__(self, *args, **kwargs):
         # call parent constructor
-        super.__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.weights = {}
         self.weights_global_grads = {}
