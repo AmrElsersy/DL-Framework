@@ -61,9 +61,7 @@ class Layer(Function):
         self.weights = {}
         self.weights_global_grads = {}
 
-        self.init_weights()
-
-    def init_weights(self):
+    def init_weights(self, *args, **kwargs):
         """
             Initialize the weights of the layer
         """

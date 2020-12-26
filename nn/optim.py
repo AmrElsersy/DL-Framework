@@ -16,11 +16,16 @@ class Optimizer:
             1 Step of weights update
         """
 
-        # for every layer
         for layer in self.parameters:
             # get layer's weights & d_weights  dictionaries and optimize them by various types of optimization algorithms
             for key, value in layer.weights.items():
                 layer.weights[key] = self.optimize(layer.weights[key], layer.weights_global_grads[key])
+
+    def zero_grad(self):
+        for layer in self.parameters:
+            for key, value in layer.weights.items():
+                layer.weights_global_grads[key] = 0
+        
 
     def optimize(self, w, dw):
         """
@@ -30,6 +35,7 @@ class Optimizer:
 
 class GradientDecent(Optimizer):
     def optimize(self, w, dw):
+        print("## prev w = ", w)
         w = w - self.lr * dw
         return w
 
