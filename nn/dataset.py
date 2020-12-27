@@ -23,6 +23,25 @@ class Dataset():
         return self.x, self.label
 
 
+class Data_Loader():
+    def __init__(self, dataset,batch_size):
+        global batch_it
+        batch_it=0
+        self.d= dataset
+        features= []
+        labels =[]
+        
+        for i in range(len(dataset.x)):
+            features.append(data[ batch_it*batch_size : batch_size*( batch_it+1) , 1:])
+            labels.append(data[batch_it*batch_size : batch_size*(batch_it+1) ,[0]])
+            batch_it+=1
+        self.d.x=features
+        self.d.label=labels
+
+    def __getitem__(self,index):
+        return self.d.x[index], self.d.label[index]
+
+
 
 Datasett= Dataset('train.csv')
 #all the labels
@@ -39,4 +58,11 @@ print(label)
 #everytime  get_batch is called it return different four samples
 for i in range(3):
     print(Datasett.get_batch(4,i))
-    print("####")
+
+
+#Dataloader class
+dataloader=Data_Loader(Datasett,4)
+my_iter = iter(dataloader)
+print(next(my_iter))
+print("***")
+print(next(my_iter))
