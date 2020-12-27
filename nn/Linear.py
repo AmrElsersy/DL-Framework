@@ -32,9 +32,3 @@ class Dense(Layer):
     grads['w'] = X
     grads['b'] = np.ones_like(self.weights['b'])
     return grads
-
-
-
-
-
-
