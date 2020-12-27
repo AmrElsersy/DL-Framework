@@ -4,30 +4,30 @@ from optim import *
 
 class Dense(Layer):
 
-  def __init__(self,indim,outdim):
+  def __init__(self,indim,outdim,*args, **kwargs):
     super().__init__()
     self.init_weights(indim,outdim)
+    self.init_weights(indim, outdim)
 
   def init_weights(self,indim, outdim):
-  # xavier weight initialization
-    self.weights['w'] = np.random.randn(indim,outdim) * np.sqrt( 2/(indim+outdim) )
-    self.weights['b'] = np.zeros(outdim)
+   # xavier weight initialization
+    self.weights['w'] = np.ones((indim,outdim)) * np.sqrt( 2/(indim+outdim) )
+    self.weights['b'] = np.zeros((1,outdim))
 
   def forward(self,X):
+    output = X * self.weights['w'] + self.weights['b']
 
-    output = np.dot(X , self.weights['w']) + self.weights['b']
     self.cache['x'] = X
     self.cache['output'] = output
-
     return output
 
   def backward(self,dY):
-
-    dX = np.dot(dY,self.local_grads['x'].T)
-    X  = self.cache['x']
-    dW = np.dot(self.local_grads['w'],dY)
+    print(self.local_grads)
+    dX = dY * self.local_grads['x'].T
+    dW = np.array(self.local_grads['w']).T * dY
     db = np.sum(dY, axis = 0, keepdims = True)
     self.weights_global_grads = {'w': dW, 'b': db}
+    print(self.weights_global_grads)
     return dX
 
   def calculate_local_grads(self, X):
@@ -39,52 +39,45 @@ class Dense(Layer):
 
 class MeanSquareLoss(Function):
   def forward(self, X, Y):
-    sum = np.sum((X - Y) ** 2, axis=1, keepdims=True)
-    mse_loss = np.mean(sum)
-    return mse_loss
-
+    return ((X-Y)**2).mean()
   def calculate_local_grads(self, X, Y):
-    grads = {'x': 2 * (X - Y) / X.shape[0]}
-    return grads
-
+    return {'x': 2 * (X - Y)}
   def backward(self):
     return self.local_grads["x"]
+def relu(x):
+    return x*(x > 0)
+def relu_prime(x):
+    return 1*(x > 0)
+class ReLU(Function):
+    def forward(self, X):
+        return relu(X)
+    def backward(self, dY):
+        return dY * self.local_grads['X']
+    def calculate_local_grads(self, X):
+        grads = {'X': relu_prime(X)}
+        return grads
 
-data = [
-[2,14],
-[3,16],
-[55,120],
-[100, 210],
-[200, 410]
-]
 
-
+x = np.array([1, 2, 3, 4, 5], dtype=np.float32)
+y = np.array([2, 4, 6, 8, 6], dtype=np.float32)
 
 model = Model()
 # y = w * x
 model.add(Dense(1,1))
+model.add(ReLU())
 model.set_loss(MeanSquareLoss())
-
-optim = GradientDecent(model.parameters(), 0.001)
-
-epochs = 1
+optim = GradientDecent(model.parameters(), 0.01)
+epochs = 3
 
 
 for epoch in range(epochs):
-  for d in data:
-    x = d[0]
-    y = d[1]
-
-    print(x,y)
     y_hat = model.forward(x)
     l = model.loss(y_hat, y)
     model.backward()
-
     optim.step()
-
     print("y_hat= ", y_hat, " ... Loss = ", l)
     print("w=",model.layers[0].weights["w"], " ... dw= ", model.layers[0].weights_global_grads["w"])
+    print("b=",model.layers[0].weights["b"], " ... db= ", model.layers[0].weights_global_grads["b"])
     print("==============================")
-
-    optim.zero_grad()
+    # optim.zero_grad()
 

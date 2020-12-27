@@ -35,7 +35,7 @@ class Optimizer:
 
 class GradientDecent(Optimizer):
     def optimize(self, w, dw):
-        print("## prev w = ", w)
+        # print("## prev w = ", w)
         w = w - self.lr * dw
         return w
 

@@ -45,4 +45,4 @@ class Model():
     def eval_mode(self):
         self.is_train_mode = False
     def parameters(self):
-        return self.layers
+        return [layer for layer in self.layers if isinstance(layer, Layer)]
