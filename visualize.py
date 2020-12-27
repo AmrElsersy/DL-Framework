@@ -1,8 +1,10 @@
 import numpy as np
 import math
 from PIL import Image
+import matplotlib
 import matplotlib.pyplot as plt
-
+import matplotlib.animation as animation
+from matplotlib import style
 
 # ******************************************************************
 def img_viewer_examples(images, labels, prediction = None, size=0, greyscale=False):
@@ -41,6 +43,7 @@ def img_viewer_examples(images, labels, prediction = None, size=0, greyscale=Fal
         else:
             ax.set_title(str(labels[idx].item()))
 
+
 def live_graph(trainingLoss, validationLoss = None):
     """
     Draw a graph for training and validation loss\n
@@ -62,6 +65,27 @@ def live_graph(trainingLoss, validationLoss = None):
     ani = animation.FuncAnimation(fig, animate, interval=1000)
     plt.tight_layout()
     plt.show()
+
+
+# def img_viewer_by_path(img_path):
+#     img = Image.open(img_path)
+#     plt.imshow(img)
+#     plt.show()
+
+
+# class Visualize:
+#     """
+#     """
+#     def __init__(self):
+#         self.x = []
+#         self.y = []
+    
+#     def set(self, x, y):
+#         self.x = x
+#         self.y = y
+    
+#     pass
+
 
 
 
