@@ -90,7 +90,15 @@ def live_graph():
     plt.show()
 
 
-Thread(target=live_graph, daemon=True).start()
+def run():
+    while True:
+        print('thread running')
+        global stop_threads
+        if stop_threads:
+            break
+
+t1 = Thread(target=live_graph, daemon=True)
+t1.start()
 
 epochs = 10
 for epoch in range(epochs):
@@ -105,5 +113,6 @@ for epoch in range(epochs):
     print("==========================================================================================================================================")
     time.sleep(1)
 
-print(trainingLoss)
+stop_threads = True
+t1.join()
 sys.exit(0)
