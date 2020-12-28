@@ -16,7 +16,7 @@ def live():
 
     def animate(i):
         plt.cla()
-        plt.plot(x_vals, y_vals)
+        plt.plot(range(len(y_vals)), y_vals)
 
     ani = FuncAnimation(plt.gcf(), animate, interval=1000)
     plt.tight_layout()
@@ -26,7 +26,6 @@ def live():
 Thread(target=live, daemon=True).start()
 
 while 1:
-    x_vals.append(next(index))
     y_vals.append(random.randint(0, 5))
     time.sleep(1)
     print(x_vals)
