@@ -22,7 +22,7 @@ class Dense(Layer):
 
   def forward(self,X):
     # print(self.weights['b'].shape)
-    output = np.dot(self.weights['w'].T ,X) + self.weights['b'].mean(axis=1, keepdims = True)
+    output = np.dot(self.weights['w'].T ,X) + self.weights['b']
     self.cache['x'] = X
     self.cache['output'] = output
 
@@ -59,6 +59,8 @@ class MeanSquareLoss(Function):
 model = Model()
 model.add(Dense(3,2))
 model.add(Dense(2,1))
+model.add(Dense(1,1))
+model.add(Dense(1,1))
 model.set_loss(MeanSquareLoss())
 optim = GradientDecent(model.parameters(),0.001)
 
