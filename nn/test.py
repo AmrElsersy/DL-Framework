@@ -87,6 +87,9 @@ def live_graph():
         plt.legend(loc='upper right')
     ani = animation.FuncAnimation(fig, animate, interval=1000)
     plt.tight_layout()
+    plt.xlabel('number of stations trying to send ')
+    plt.ylabel('Channel efficiency')
+    plt.title('Efficiency of ethernet at 10 Mbps with 512-bit slot times')
     plt.show()
 
 
