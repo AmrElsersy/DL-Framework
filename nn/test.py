@@ -90,18 +90,9 @@ def live_graph():
     plt.show()
 
 
-def run():
-    while True:
-        print('thread running')
-        global stop_threads
-        if stop_threads:
-            break
-
-t1 = Thread(target=live_graph, daemon=True)
-t1.start()
-
-epochs = 10
-for epoch in range(epochs):
+def main():
+  epochs = 10
+  for epoch in range(epochs):
     optim.zero_grad()
     y_hat = model.forward(x)
     l = model.loss(y_hat, y)
@@ -109,10 +100,15 @@ for epoch in range(epochs):
     model.backward()
     optim.step()
     print("y_hat= ", y_hat, " ... Loss = ", l)
-    print("w=",model.layers[0].weights, " ... dw= ", model.layers[0].weights_global_grads["w"]," ... db= ", model.layers[0].weights_global_grads["b"])
+    print("w=", model.layers[0].weights, " ... dw= ", model.layers[0].weights_global_grads["w"],
+          " ... db= ", model.layers[0].weights_global_grads["b"])
     print("==========================================================================================================================================")
     time.sleep(1)
 
+
+t1 = Thread(target=main, daemon=True)
+t1.start()
+live_graph()
 stop_threads = True
 t1.join()
 sys.exit(0)
