@@ -1,6 +1,13 @@
 from abstract_classes import *
 from model import Model
 from optim import *
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from matplotlib import style
+from threading import Thread
+import time
+import sys
 
 class Dense(Layer):
 
@@ -62,14 +69,41 @@ y = np.array([2,4,6], dtype=np.float).reshape(1,-1)
 # ],dtype=np.float32).T
 # y = np.array([6, 15, 24], dtype=np.float32).reshape(1,-1)
 
+trainingLoss = []
+validationLoss = None
+
+def live_graph():
+    """
+    Draw a graph for training and validation loss\n
+    [Required] trainingLoss: Training loss array,\t
+    [optional] validationLoss: Validation loss array,
+    """
+    style.use('fivethirtyeight')
+    fig = plt.figure()
+    ax1 = fig.add_subplot(1, 1, 1)
+    def animate(i):
+        ax1.cla()
+        ax1.plot(np.array(range(len(trainingLoss))) + 1, trainingLoss, label="Training loss")
+        plt.legend(loc='upper right')
+    ani = animation.FuncAnimation(fig, animate, interval=1000)
+    plt.tight_layout()
+    plt.show()
+
+
+Thread(target=live_graph, daemon=True).start()
+
 epochs = 10
 for epoch in range(epochs):
+    optim.zero_grad()
     y_hat = model.forward(x)
     l = model.loss(y_hat, y)
+    trainingLoss.append(l.squeeze())
     model.backward()
     optim.step()
     print("y_hat= ", y_hat, " ... Loss = ", l)
     print("w=",model.layers[0].weights, " ... dw= ", model.layers[0].weights_global_grads["w"]," ... db= ", model.layers[0].weights_global_grads["b"])
     print("==========================================================================================================================================")
+    time.sleep(1)
 
-    optim.zero_grad()
+print(trainingLoss)
+sys.exit(0)
