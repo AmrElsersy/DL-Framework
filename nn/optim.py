@@ -35,8 +35,7 @@ class Optimizer:
 
 class GradientDecent(Optimizer):
     def optimize(self, w, dw):
-        # print("## prev w = ", w)
-        w = w - self.lr * dw
+        w = w - self.lr * np.mean(dw)
         return w
 
 class SGD(Optimizer):
@@ -63,7 +62,7 @@ class MomentumGD(GradientDecent):
         self.V_dW = [ {} for i in self.parameters]
 
         # zero initialization
-        for layer in self.parameters:
+        for i, layer in enumerate(self.parameters):
             for key, _ in layer.weights.items():
                 self.V_dW[i][key] = 0
             
@@ -125,4 +124,3 @@ class StepLR_Schedular:
 
         if self.step_count % self.step_size == 0:
             self.optimizer.lr = self.optimizer.lr * self.gamma
-
