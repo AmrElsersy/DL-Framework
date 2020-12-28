@@ -59,8 +59,6 @@ class MeanSquareLoss(Function):
 model = Model()
 model.add(Dense(3,2))
 model.add(Dense(2,1))
-model.add(Dense(1,1))
-model.add(Dense(1,1))
 model.set_loss(MeanSquareLoss())
 optim = GradientDecent(model.parameters(),0.001)
 
