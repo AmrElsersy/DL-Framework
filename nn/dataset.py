@@ -89,7 +89,7 @@ class Data_Loader():
 
 
     def __getitem__(self,index):
-        return self.x, self.label
+        return self.x[index], self.label[index]
 
 
 """
@@ -129,6 +129,8 @@ train_dataset, test_dataset = Datasett.split_data(0.5)
 
 #Dataloader class
 dataloader=Data_Loader(Datasett,3)
+for x,y in dataloader:
+    print(y.shape)
 my_iter = iter(dataloader.x)
 print(next(my_iter))
 print(next(my_iter))
