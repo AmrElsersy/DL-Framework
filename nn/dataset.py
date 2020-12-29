@@ -103,13 +103,17 @@ MNIST
 """
 Datasett= Dataset('train.csv')
 #all the labels
-print(Datasett.x)
+# print(Datasett.x)
 
 #first sample
-first_data= Datasett[1]
-features,label= first_data
-print(label)
+# first_data= Datasett[1]
+# features,label= first_data
+# print(label)
 
+
+for i in range(5):
+    f, l = Datasett[i]
+    print(f.shape, l.shape)
 
 #print(len(features))
 #print(len(Datasett.x))
