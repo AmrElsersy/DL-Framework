@@ -101,41 +101,41 @@ CIFR-10
 """
 MNIST 
 """
-Datasett= Dataset('train.csv')
-#all the labels
-# print(Datasett.x)
+# Datasett= Dataset('train.csv')
+# #all the labels
+# # print(Datasett.x)
 
-#first sample
-# first_data= Datasett[1]
-# features,label= first_data
-# print(label)
-
-
-for i in range(5):
-    f, l = Datasett[i]
-    print(f.shape, l.shape)
-
-#print(len(features))
-#print(len(Datasett.x))
-
-#label of first sample
-#print(label)
-
-#splitting data to train and test 
-train_dataset, test_dataset = Datasett.split_data(0.5)
+# #first sample
+# # first_data= Datasett[1]
+# # features,label= first_data
+# # print(label)
 
 
-#iterating on dataset by batch size=4
-#everytime  get_batch is called it return different four samples
-#for i in range(3):
-#    print(Datasett.get_batch(4,i))
+# for i in range(5):
+#     f, l = Datasett[i]
+#     print(f.shape, l.shape)
+
+# #print(len(features))
+# #print(len(Datasett.x))
+
+# #label of first sample
+# #print(label)
+
+# #splitting data to train and test 
+# train_dataset, test_dataset = Datasett.split_data(0.5)
 
 
-#Dataloader class
-dataloader=Data_Loader(Datasett,3)
-for x,y in dataloader:
-    print(y.shape)
-my_iter = iter(dataloader.x)
-print(next(my_iter))
-print(next(my_iter))
-print(next(my_iter))
+# #iterating on dataset by batch size=4
+# #everytime  get_batch is called it return different four samples
+# #for i in range(3):
+# #    print(Datasett.get_batch(4,i))
+
+
+# #Dataloader class
+# dataloader=Data_Loader(Datasett,3)
+# for x,y in dataloader:
+#     print(y.shape)
+# my_iter = iter(dataloader.x)
+# print(next(my_iter))
+# print(next(my_iter))
+# print(next(my_iter))
