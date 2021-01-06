@@ -35,7 +35,7 @@ class Optimizer:
 
 class GradientDecent(Optimizer):
     def optimize(self, w, dw):
-        w = w - self.lr * np.mean(dw)
+        w = w - self.lr * np.mean(dw,axis=1,keepdims=True)
         return w
 
 class SGD(Optimizer):

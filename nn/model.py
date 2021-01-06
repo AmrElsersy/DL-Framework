@@ -23,7 +23,7 @@ class Model():
 
     def forward(self, x):
         for layer in self.layers:
-            x = layer(x)            
+            x = layer(x)         
         return x
 
     def loss(self, predictions, labels):

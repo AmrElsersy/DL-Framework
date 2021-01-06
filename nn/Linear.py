@@ -1,6 +1,5 @@
 from abstract_classes import *
 
-
 class Dense(Layer):
 
   def __init__(self,indim,outdim,*args, **kwargs):
@@ -17,12 +16,12 @@ class Dense(Layer):
         (output layer x 1)
     """
    # xavier weight initialization
-    self.weights['w'] = np.ones((indim,outdim)) * np.sqrt( 2/(indim+outdim) )
+    self.weights['w'] = np.random.randn(indim,outdim) * np.sqrt( 2/(indim+outdim) )
     self.weights['b'] = np.zeros((outdim, 1))
 
   def forward(self,X):
 
-    # output dims = (output_layer x feeatures) . (features x batch_size) = (output_layer x batch_size)
+    # output dims = (output_layer x features) . (features x batch_size) = (output_layer x batch_size)
     output = np.dot(self.weights['w'].T ,X) + self.weights['b']
     self.cache['x'] = X
     self.cache['output'] = output
@@ -42,6 +41,6 @@ class Dense(Layer):
   def calculate_local_grads(self, X):
     grads = {}
     grads['x'] = self.weights['w']
-    grads['w'] = X.mean(axis = 1, keepdims = True) # mean for batch training
+    grads['w'] = X
     grads['b'] = np.ones_like(self.weights['b'])
     return grads

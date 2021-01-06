@@ -2,6 +2,9 @@ import numpy as np
 from abstract_classes import Function
 
 class Loss(Function):
+    def __init__(self,*args, **kwargs):
+        super().__init__()
+    
     def forward(self, Y_hat, Y):
         pass
     def calculate_local_grads(self, Y_hat, Y):
@@ -29,18 +32,18 @@ class CrossEntropyLoss(Loss):
             y = (1, nbatch)
         """
         # calculating crossentropy
-        probs = np.exp(Y_hat)/np.sum(Y_hat, axis=0, keepdims=True) # (ndim, nbatch)
+        exp_x = np.exp(Y_hat)
+        probs = exp_x / np.sum(exp_x, axis=0, keepdims=True)
 
-        log_probs = -np.log( probs )
+        log_probs = -np.log(probs)
 
         #  ........... Problem ...............
         # Y is inf because y hat at the begin is very big (range 8k) so e^8k = inf 
-        loss = Y * log_probs
 
-        print("Dims", loss.shape)
-        print(Y)
-        print(probs)
-        crossentropy_loss = np.mean(log_probs) # avrage on both axis 0 & axis 1 ()
+        crossentropy_loss = np.mean(log_probs,axis=0, keepdims=True) # avrage on both axis 0 & axis 1 ()
+        #print("Dims", probs.shape)
+        print('Label =',Y)
+        print('Prediction = ',np.argmax(probs,axis=0))
 
         # caching for backprop
         self.cache['probs'] = probs
@@ -48,28 +51,15 @@ class CrossEntropyLoss(Loss):
 
         return crossentropy_loss
 
-    def local_grad(self, X, Y):
+    def calculate_local_grads(self, X, Y):
         probs = self.cache['probs']
-        ones = np.zeros_like(probs)
-        for row_idx, col_idx in enumerate(Y):
-            ones[row_idx, col_idx] = 1.0
+        b = np.zeros((probs.shape[1],probs.shape[0]))
+        b[np.arange(Y.shape[1]),Y] = 1
+        b = b.T
+        probs = np.subtract(probs,b) / float(Y.shape[0])
+        #probs =  probs.mean(axis=1,keepdims=True)
+        return {'x':probs*X}
 
-        grads = {'X': (probs - ones)/float(len(X))}
-        return grads
-
-
-class NLLLoss(Loss):
-    """
-            yhat = (ndim, nbatch)
-            y = (1, nbatch)
-    """
-
-    def forward(self, Y_hat, Y):
-        
-        logs = [-np.log( Y_hat[Y[i]] ) for i in range
-
-        print("===============================")
-        print(logs.shape)
             
             
 
