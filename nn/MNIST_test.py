@@ -19,10 +19,13 @@ model.add(Dense(45, 10))
 
 model.set_loss(CrossEntropyLoss())
 
-optimizer = GradientDecent(model.parameters(), learning_rate=0.001)
+optimizer = GradientDecent(model.parameters(), learning_rate = 0.001)
 
-
+i = 0
 for image, label in dataloader:
+    if i == 3000:
+        break
+    i = i + 1
     predicted = model(image)
     loss = model.loss(predicted, label)
     model.backward()

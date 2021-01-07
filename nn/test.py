@@ -21,18 +21,40 @@ class Dense(Layer):
     self.weights['b'] = np.zeros((outdim, 1))
 
   def forward(self,X):
+    # print("weight transpose")
+    # print(self.weights['w'].T.shape)
+    # print("Input")
+    # print(X.shape)
+    # print("bias transpose")
     # print(self.weights['b'].shape)
     output = np.dot(self.weights['w'].T ,X) + self.weights['b']
+    # print("Output")
+    # print(output.shape)
     self.cache['x'] = X
     self.cache['output'] = output
 
     return output
 
   def backward(self,global_grad):
-
     dX = np.dot(self.local_grads['x'], global_grad )
+    # print("local grad x")
+    # print(self.local_grads['x'].shape)
+    # print("global grad")
+    # print(global_grad.shape)
+    # print("dX")
+    # print(dX.shape)
     dW = np.dot(np.array(self.local_grads['w']) , global_grad.T )
-    db = np.sum(global_grad, axis = 0, keepdims = True)
+    # print("local grad w")
+    # print(self.local_grads['w'].shape)
+    # print("global grad Transpose")
+    # print(global_grad.T.shape)
+    # print("dW")
+    # print(dW.shape)
+    db = np.sum(global_grad, axis = 1, keepdims = True)
+    # print("global grad")
+    # print(global_grad.shape)
+    # print("db")
+    # print(db.shape)
     self.weights_global_grads = {'w': dW, 'b': db}
     return dX
 

@@ -31,11 +31,13 @@ class Optimizer:
         """
             Optimization Equation for different types of gradient decent 
         """
-        pass
+        return w
 
 class GradientDecent(Optimizer):
     def optimize(self, w, dw):
-        w = w - self.lr * np.mean(dw,axis=1,keepdims=True)
+        # dw = np.mean(dw, axis=1, keepdims=True)
+        dw = dw / np.max(dw)
+        w = w - self.lr * dw
         return w
 
 class SGD(Optimizer):

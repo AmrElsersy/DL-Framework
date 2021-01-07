@@ -20,8 +20,8 @@ class Dense(Layer):
     self.weights['b'] = np.zeros((outdim, 1))
 
   def forward(self,X):
-
     # output dims = (output_layer x features) . (features x batch_size) = (output_layer x batch_size)
+    # print(self.weights['b'].shape)
     output = np.dot(self.weights['w'].T ,X) + self.weights['b']
     self.cache['x'] = X
     self.cache['output'] = output
@@ -30,11 +30,13 @@ class Dense(Layer):
 
   def backward(self,global_grad):
     dX = np.dot(self.local_grads['x'], global_grad )
+    # print("local grad x")
+    # print(self.local_grads['x'].shape)
     # dW dims = W dims .. because we have to calculate w = w - lr * dW
     # note that dW is global gradient .... but the local gradient (dY/dw) has a different dims as it is a function of the input
     dW = np.dot(np.array(self.local_grads['w']) , global_grad.T )
     # same as dW above
-    db = np.sum(global_grad, axis = 0, keepdims = True)
+    db = np.sum(global_grad, axis = 1, keepdims = True)
     self.weights_global_grads = {'w': dW, 'b': db}
     return dX
 
