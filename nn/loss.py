@@ -33,13 +33,16 @@ class CrossEntropyLoss(Loss):
         """
         # calculating crossentropy
         exp_x = np.exp(Y_hat)
+
         probs = exp_x / np.sum(exp_x, axis=0, keepdims=True)
-        log_probs = -np.log(probs)
+        y = Y.T
+        # print()
+        log_probs = -np.log([probs[y[i], i] for i in range(probs.shape[1])])
 
         #  ........... Problem ...............
         # Y is inf because y hat at the begin is very big (range 8k) so e^8k = inf 
-        crossentropy_loss = np.mean(log_probs,axis=0, keepdims=True) # avrage on both axis 0 & axis 1 ()
-        crossentropy_loss = np.sum(crossentropy_loss, axis=1, keepdims=True)
+        crossentropy_loss = np.mean(log_probs) # avrage on both axis 0 & axis 1 ()
+        # crossentropy_loss = np.sum(crossentropy_loss, axis=1, keepdims=True)
         #print("Dims", probs.shape)
         print('Label =',Y)
         print('Prediction = ',np.argmax(probs,axis=0))

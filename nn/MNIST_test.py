@@ -23,9 +23,10 @@ optimizer = GradientDecent(model.parameters(), learning_rate = 0.001)
 
 i = 0
 for image, label in dataloader:
-    if i == 3000:
+    if i == 5000:
         break
     i = i + 1
+    print(i)
     predicted = model(image)
     loss = model.loss(predicted, label)
     model.backward()
