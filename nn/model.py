@@ -42,7 +42,9 @@ class Model():
 
     def train_mode(self):
         self.is_train_mode = True
+
     def eval_mode(self):
         self.is_train_mode = False
+
     def parameters(self):
         return [layer for layer in self.layers if isinstance(layer, Layer)]

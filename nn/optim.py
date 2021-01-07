@@ -97,7 +97,7 @@ class Adam(GradientDecent):
                 layer.weights[key] = self.optimize(layer.weights[key], self.V_dW[i][key] / ( np.sqrt(self.S_dw[i][key]) + self.epsilon) )      
 
 
-class StepLR_Schedular:
+class StepLR:
     def __init__(self, optimizer, step_size, gamma):
         self.optimizer = optimizer 
         self.step_count = 0

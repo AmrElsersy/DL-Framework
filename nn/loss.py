@@ -17,13 +17,13 @@ class Loss(Function):
         
 class MeanSquareLoss(Loss):
   def forward(self, Y_hat, Y):
-    return ((Y_hat-Y)**2).mean(axis=1, keepdims=True)
+    return (Y_hat-Y)**2
   
   def calculate_local_grads(self, Y_hat, Y):
     # dL_dYhat = (2 * (Y_hat - Y))
     # m_examples = dL_dYhat.shape[0]
     # return {'x': dL_dYhat / m_examples }
-    return {'x' : 2*(Y_hat - Y).mean(axis=1, keepdims=True) }
+    return {'x' : 2*(Y_hat - Y) }
   
 
 class CrossEntropyLoss(Loss):

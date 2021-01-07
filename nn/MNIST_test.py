@@ -1,10 +1,16 @@
 from dataset import Dataset, Data_Loader
 from model import Model
 from Linear import Dense
-from optim import GradientDecent, MomentumGD,  Adam
+from optim import GradientDecent, MomentumGD,  Adam, StepLR
 from activations import ReLU,Sigmoid
 from loss import CrossEntropyLoss
+from utils import save_weights, load_weights
+
 import time
+
+# wieghts path
+path = "ray2_weights.sav"
+
 
 # MNIST Dataset
 batch_size = 32
@@ -21,9 +27,12 @@ model.add(Dense(45, 10))
 
 model.set_loss(CrossEntropyLoss())
 
-optimizer = MomentumGD(model.parameters(), learning_rate = 0.01, beta=0.9)
-optimizer = Adam(model.parameters(), learning_rate = 0.01, beta_Vdw=0.9, beta_Sdw=0.99)
+# optimizer = GradientDecent(model.parameters(), learning_rate = 0.01)
+# optimizer = MomentumGD(model.parameters(), learning_rate = 0.01)
+optimizer = Adam(model.parameters(), learning_rate = 0.01)
+lr_schedular = StepLR(optimizer, step_size = 1, gamma=0.1)
 
+model = load_weights(path)
 
 epochs = 1
 for epoch in range(epochs):
@@ -36,8 +45,10 @@ for epoch in range(epochs):
         print("Iteration no.", i)
         predicted = model(image)
         loss = model.loss(predicted, label)
-        model.backward()
-        optimizer.step()
-        print("loss= ", loss)
+        # model.backward()
+        # optimizer.step()
+        # print("loss= ", loss)
         # time.sleep(0.1)
         print("===========")
+
+# save_weights(model, path)
