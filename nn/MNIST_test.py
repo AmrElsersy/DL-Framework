@@ -7,7 +7,7 @@ from loss import CrossEntropyLoss
 
 # MNIST Dataset
 dataset = Dataset("train.csv")
-dataloader = Data_Loader(dataset,4)
+dataloader = Data_Loader(dataset, 32)
 
 
 model = Model()
@@ -23,10 +23,10 @@ optimizer = GradientDecent(model.parameters(), learning_rate = 0.001)
 
 i = 0
 for image, label in dataloader:
-    if i == 5000:
-        break
+    # if i == 1700:
+    #     break
     i = i + 1
-    print(i)
+    print("Iteration no.", i)
     predicted = model(image)
     loss = model.loss(predicted, label)
     model.backward()

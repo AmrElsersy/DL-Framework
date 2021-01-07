@@ -20,7 +20,7 @@ def leaky_relu_derivative(x,alpha):
 
 def softMax(x):
     exp_x = np.exp(x)
-    value = exp_x / np.sum(exp_x, axis=1, keepdims=True)
+    value = exp_x / np.sum(exp_x, axis=0, keepdims=True)
     return value
 
 def tanh (x):

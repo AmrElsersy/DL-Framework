@@ -1,4 +1,7 @@
 import numpy as np
+import sys
+import math
+
 from abstract_classes import Function
 
 class Loss(Function):
@@ -32,16 +35,19 @@ class CrossEntropyLoss(Loss):
             y = (1, nbatch)
         """
         # calculating crossentropy
-        exp_x = np.exp(Y_hat)
-
-        probs = exp_x / np.sum(exp_x, axis=0, keepdims=True)
+        # exp_x = np.maximum(np.exp(Y_hat), np.exp(Y_hat) + 1e-1)
+        max_1 = np.max(Y_hat, axis=0, keepdims=True)
+        max_1 = np.subtract(Y_hat, max_1)
+        exp_x = np.exp(max_1)
+        probs = np.divide(exp_x, np.sum(exp_x, axis=0, keepdims=True))
         y = Y.T
         # print()
-        log_probs = -np.log([probs[y[i], i] for i in range(probs.shape[1])])
+        log_probs = -np.log([(probs[y[i], i]+1e-10) for i in range(probs.shape[1])])
+        
 
         #  ........... Problem ...............
         # Y is inf because y hat at the begin is very big (range 8k) so e^8k = inf 
-        crossentropy_loss = np.mean(log_probs) # avrage on both axis 0 & axis 1 ()
+        crossentropy_loss = max(np.mean(log_probs), 0) # avrage on both axis 0 & axis 1 ()
         # crossentropy_loss = np.sum(crossentropy_loss, axis=1, keepdims=True)
         #print("Dims", probs.shape)
         print('Label =',Y)
@@ -50,7 +56,8 @@ class CrossEntropyLoss(Loss):
         # caching for backprop
         self.cache['probs'] = probs
         self.cache['y'] = Y
-
+        if math.isnan(crossentropy_loss):
+            sys.exit(0)
         return crossentropy_loss
 
     def calculate_local_grads(self, X, Y):
