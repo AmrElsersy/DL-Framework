@@ -35,8 +35,6 @@ class Optimizer:
 
 class GradientDecent(Optimizer):
     def optimize(self, w, dw):
-        # dw = np.mean(dw, axis=1, keepdims=True)
-        dw = dw / np.max(dw)
         w = w - self.lr * dw
         return w
 

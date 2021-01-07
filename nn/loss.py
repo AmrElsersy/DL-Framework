@@ -50,8 +50,9 @@ class CrossEntropyLoss(Loss):
         crossentropy_loss = max(np.mean(log_probs), 0) # avrage on both axis 0 & axis 1 ()
         # crossentropy_loss = np.sum(crossentropy_loss, axis=1, keepdims=True)
         #print("Dims", probs.shape)
+        
         print('Label =',Y)
-        print('Prediction = ',np.argmax(probs,axis=0))
+        print('Pred  = ',np.argmax(probs,axis=0))
 
         # caching for backprop
         self.cache['probs'] = probs
