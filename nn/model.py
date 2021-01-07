@@ -36,7 +36,6 @@ class Model():
         global_grad = self.loss_function.backward()
         for layer in reversed(self.layers):
             global_grad = layer.backward(global_grad)
-            # print(global_grad.shape)
 
     def __call__(self, x):
         return self.forward(x)
@@ -45,5 +44,5 @@ class Model():
         self.is_train_mode = True
     def eval_mode(self):
         self.is_train_mode = False
-    def parameters(self):        
+    def parameters(self):
         return [layer for layer in self.layers if isinstance(layer, Layer)]

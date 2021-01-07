@@ -2,9 +2,9 @@ from abstract_classes import Function, Layer
 import numpy as np
 
 
-class Optimizer:
+class GradientDecent:
     """
-        Optimizer for weight update process with different Gradient Decent algorithms
+        Optimizer for weight update process for basic Gradient Decent algorithm
     """
     def __init__(self, parameters, learning_rate):
         # model layers
@@ -31,28 +31,15 @@ class Optimizer:
         """
             Optimization Equation for different types of gradient decent 
         """
-        return w
-
-class GradientDecent(Optimizer):
-    def optimize(self, w, dw):
         w = w - self.lr * dw
         return w
 
-class SGD(Optimizer):
-    """
-        Stochastic Gradient Decent 
-    """
-    def optimize(self, w, dw):
-        # get best learning rate
-        self.lr = np.argmin(w - self.lr * dw)
-        w = w - self.lr * dw
-        return w
 
 class MomentumGD(GradientDecent):
     """
         Gradient Decent algorithm based on Avarage of weights grads for better estimation of grads
     """
-    def __init__(self, parameters, learning_rate, beta):
+    def __init__(self, parameters, learning_rate, beta=0.9):
         super().__init__(parameters, learning_rate)
 
         # avarage weight parameter
@@ -78,7 +65,7 @@ class Adam(GradientDecent):
     """
         Gradient Decent algorithm based on Avarage of weights gradients + RMS of gradients
     """
-    def __init__(self, parameters, learning_rate, beta_Vdw, beta_Sdw):
+    def __init__(self, parameters, learning_rate, beta_Vdw=0.9, beta_Sdw=0.99):
         super().__init__(parameters, learning_rate)
 
         # avarage weight parameter
@@ -88,26 +75,26 @@ class Adam(GradientDecent):
 
         # make V_dw as a list of dicts with list_size = layes num
         self.V_dW = [ {} for i in self.parameters]
+        self.S_dw = [ {} for i in self.parameters]
 
         # zero initialization
-        for layer in self.parameters:
+        for i, layer in enumerate(self.parameters):
             for key, _ in layer.weights.items():
                 self.V_dW[i][key] = 0
-
-        # as follow .. zero initialization
-        self.S_dw = self.V_dW
+                self.S_dw[i][key] = 0
 
     def step(self):
         for i, layer in enumerate(self.parameters):
-            for key, _ in weights.items():
+            for key, _ in layer.weights.items():
                 # V_dW = B1 * V_dW_prev + (1-B) * dW
                 self.V_dW[i][key] = self.beta_Vdw * self.V_dW[i][key] + (1-self.beta_Vdw) * layer.weights_global_grads[key]
 
                 # S_dw = B2 * S_dw_prev + (1-B2) * dW^2
-                self.S_dw[i][key] = self.beta_Sdw * self.S_dw[i][key] + (1-self.beta_Sdw) * (layer.weights_global_grads[key] **2 ) 
+                dW = layer.weights_global_grads[key]
+                self.S_dw[i][key] = self.beta_Sdw * self.S_dw[i][key] + (1-self.beta_Sdw) * (dW*dW) 
 
                 # w = w - lr * V_dw / (sqrt(S_dw) + E)
-                layer.weights[key] = self.optimize(layer.weights[key], self.V_dW[i][key] / (np.sqrt(self.S_dw[i][key]) + self.epsilon) )        
+                layer.weights[key] = self.optimize(layer.weights[key], self.V_dW[i][key] / ( np.sqrt(self.S_dw[i][key]) + self.epsilon) )      
 
 
 class StepLR_Schedular:
