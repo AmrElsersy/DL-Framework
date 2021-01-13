@@ -26,7 +26,7 @@ class Dataset():
         return self.x[ : ,index ], self.label[ : ,index]
 
     def num_samples(self):
-        pixels, samples= self.x.shape
+        pixels, samples= self.label.shape
         return samples
 
     def get_batch(self, batch_size, batch_iterator):
@@ -126,6 +126,7 @@ class CIFER_10_dataset(Dataset):
             labels= cifar_test_data_dict[b'labels']
 
         l.append(labels)
+        feature=feature.reshape(len(feature),3,32,32)
         self.label = numpy.asarray(l)
         self.x= feature.transpose()
 
@@ -138,17 +139,18 @@ CIFR-10
 """
 Datasett= CIFER_10_dataset('cifar-10-batches-py',train_flag=1)
 print("NO of samples:", Datasett.num_samples())
+#print(Datasett.x[0])
 #r, t = Datasett.split_data(0.5)
 #print("r labels", r.label.shape)
 dataloader=Data_Loader(Datasett,1000)
-#for x,y in dataloader:
- #    print(x.shape)
+for x,y in dataloader:
+     print(x.shape)
 
 """
 MNIST 
 """
 d= MNIST_dataset('train.csv')
 
-dataloader2=Data_Loader(d,2)
-for x,y in dataloader2:
-     print(x.shape)
+#dataloader2=Data_Loader(d,2)
+#for x,y in dataloader2:
+#     print(x.shape)
