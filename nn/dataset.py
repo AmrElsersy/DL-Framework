@@ -4,6 +4,8 @@ import numpy as np
 import numpy
 import math 
 
+
+# for loading CIFER-10 dataset
 def unpickle(file):
     
     with open(file, 'rb') as fo:
@@ -13,31 +15,19 @@ def unpickle(file):
 
 class Dataset():
 
-    def __init__(self,file):
-        self.file=file
-        images= pd.read_csv(file)
-        global data
-        data=images.values
-
-        """if number of samples in a dataset is odd
-        #if number of samples is odd repeat a sample, to handle equal number of records inside a batch
-        print(len(data))
-        if (len(data)%2 != 0):
-            data = numpy.vstack([data, data[0]])
-        """
-
-        self.samples=data
+    def __init__(self, x, labels):
         #features
-        self.x= data[:, 1:].transpose()
+        self.x= x
         #label
-        self.label= data[:,[0]].transpose()
+        self.label= labels
 
 
     def __getitem__(self,index):
         return self.x[ : ,index ], self.label[ : ,index]
 
     def num_samples(self):
-        return len(self.x)
+        pixels, samples= self.x.shape
+        return samples
 
     def get_batch(self, batch_size, batch_iterator):
         #iterating on dataset by batch size=batch_size
@@ -54,15 +44,20 @@ class Dataset():
     def split_data(self,ratio):
         #if ratio =0.6 we multiply it by the whole number of samples
         ratio= int(ratio* self.num_samples())
-        train= Dataset(self.file)
-        train.x=data[:ratio, 1:]
-        train.label=data[:ratio ,[0]]
-        train.samples= data[:ratio , :]
+        train_features= self.x[:,:ratio]
+        test_features = self.x[:,ratio:]
 
-        test= Dataset(self.file)
-        test.samples= data[ratio: , :]
-        test.x=data[ratio:, 1:]
-        test.label=data[ratio: ,[0]]
+        train_labels = self.label[:,:ratio]
+        test_labels = self.label[:,ratio :]
+        train= Dataset(train_features,train_labels)
+        #train.x=data[:ratio, 1:]
+        #train.label=data[:ratio ,[0]]
+        #train.samples= data[:ratio , :]
+
+        test= Dataset(test_features,test_labels)
+        #test.samples= data[ratio: , :]
+        #test.x=data[ratio:, 1:]
+        #test.label=data[ratio: ,[0]]
         return train,test
 
 
@@ -92,50 +87,68 @@ class Data_Loader():
         return self.x[index], self.label[index]
 
 
+class MNIST_dataset(Dataset):
+
+    def __init__(self,file):
+        self.file=file
+        images= pd.read_csv(file)
+        global data
+        data=images.values
+        self.samples=data
+        #features
+        self.x= data[:, 1:].transpose()
+        #label
+        self.label= data[:,[0]].transpose()
+
+        Dataset.__init__(self,self.x,self.label)
+
+
+class CIFER_10_dataset(Dataset):
+
+    def __init__(self,data_dir,train_flag=1):
+        
+        labels= []
+        feature=None
+        l=[]
+        if (train_flag ==1 ):
+            for i in range(1, 6):
+                cifar_train_data_dict = unpickle(data_dir + "/data_batch_{}".format(i))
+                if i == 1:
+                    feature=cifar_train_data_dict[b'data']
+                else:
+                    feature=np.vstack((feature, cifar_train_data_dict[b'data']))
+         
+                labels.extend(cifar_train_data_dict[b'labels'])
+
+        else: #test data
+            cifar_test_data_dict = unpickle(data_dir + "/test_batch")
+            feature = cifar_test_data_dict[b'data'] 
+            labels= cifar_test_data_dict[b'labels']
+
+        l.append(labels)
+        self.label = numpy.asarray(l)
+        self.x= feature.transpose()
+
+        Dataset.__init__(self,self.x,self.label)
+
+
+
 """
 CIFR-10
 """
-#x=unpickle("data_batch_1")
-#print(x, "**************************")
+Datasett= CIFER_10_dataset('cifar-10-batches-py',train_flag=1)
+print("NO of samples:", Datasett.num_samples())
+#r, t = Datasett.split_data(0.5)
+#print("r labels", r.label.shape)
+dataloader=Data_Loader(Datasett,1000)
+#for x,y in dataloader:
+ #    print(x.shape)
 
 """
 MNIST 
 """
-# Datasett= Dataset('train.csv')
-# #all the labels
-# # print(Datasett.x)
+d= MNIST_dataset('train.csv')
 
-# #first sample
-# # first_data= Datasett[1]
-# # features,label= first_data
-# # print(label)
-
-
-# for i in range(5):
-#     f, l = Datasett[i]
-#     print(f.shape, l.shape)
-
-# #print(len(features))
-# #print(len(Datasett.x))
-
-# #label of first sample
-# #print(label)
-
-# #splitting data to train and test 
-# train_dataset, test_dataset = Datasett.split_data(0.5)
-
-
-# #iterating on dataset by batch size=4
-# #everytime  get_batch is called it return different four samples
-# #for i in range(3):
-# #    print(Datasett.get_batch(4,i))
-
-
-# #Dataloader class
-# dataloader=Data_Loader(Datasett,3)
-# for x,y in dataloader:
-#     print(y.shape)
-# my_iter = iter(dataloader.x)
-# print(next(my_iter))
-# print(next(my_iter))
-# print(next(my_iter))
+dataloader2=Data_Loader(d,2)
+for x,y in dataloader2:
+     print(x.shape)
