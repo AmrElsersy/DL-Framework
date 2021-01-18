@@ -13,31 +13,25 @@ path = "ray2_weights.sav"
 
 
 # MNIST Dataset
-batch_size = 32
+batch_size = 5
 dataset = Dataset("train.csv")
 dataloader = Data_Loader(dataset, batch_size)
-image = dataset[0][0]/255
-image = image.reshape(1,1,28,28)
-print(image)
-ob1 = conv(1, 4, 3)
-mp = MaxPool2D(kernel_size=(2,2))
-ob1.forward(image)
-#ob1.backward(image)
 
-ob1.forward(image)
-mp.forward(image)
-exit()
+#exit()
 #ob1.backward()
 
 
 
 
 model = Model()
-model.add(Dense(784, 90))
+model.add(conv(1, 4, 3, padding=1))
+model.add(MaxPool2D(kernel_size=(2,2)))
 model.add(ReLU())
-model.add(Dense(90, 45))
+model.add(conv(4, 8, 3, padding=1))
+model.add(MaxPool2D(kernel_size=2))
 model.add(ReLU())
-model.add(Dense(45, 10))
+model.add(Flatten())
+model.add(Dense(8*7*7, 10))
 
 model.set_loss(CrossEntropyLoss())
 
@@ -47,24 +41,24 @@ model.set_loss(CrossEntropyLoss())
 optimizer = Adam(model.parameters(), learning_rate = 0.01)
 lr_schedular = StepLR(optimizer, step_size = 1, gamma=0.1)
 
-model = load_weights(path)
+#model = load_weights(path)
 
-epochs = 1
+epochs = 10
 for epoch in range(epochs):
     i = 0
     for image, label in dataloader:
         # if i == 1700:
         #     break
         image = image/255
-        image = image.reshape(28,28)
+        image = image.reshape(batch_size,1,28,28)
         i = i + 1
         print("Iteration no.", i)
         predicted = model(image)
         loss = model.loss(predicted, label)
-        # model.backward()
-        # optimizer.step()
-        # print("loss= ", loss)
-        # time.sleep(0.1)
+        model.backward()
+        optimizer.step()
+        print("loss= ", loss)
+        #time.sleep(0.1)
         print("===========")
 
 # save_weights(model, path)
