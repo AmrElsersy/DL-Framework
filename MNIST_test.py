@@ -7,6 +7,13 @@ from loss import CrossEntropyLoss
 from utils import save_weights, load_weights
 from cnn import *
 import time
+import random
+from itertools import count
+import matplotlib.pyplot as plt
+from matplotlib import style
+from matplotlib.animation import FuncAnimation
+from threading import Thread
+import sys
 
 # wieghts path
 path = "ray2_weights.sav"
@@ -42,10 +49,10 @@ model.add(Dense(45, 10))
 model.set_loss(CrossEntropyLoss())
 
 
-# optimizer = GradientDecent(model.parameters(), learning_rate = 0.01)
+optimizer = GradientDecent(model.parameters(), learning_rate = 0.01)
 # optimizer = MomentumGD(model.parameters(), learning_rate = 0.01)
-optimizer = Adam(model.parameters(), learning_rate = 0.01)
-lr_schedular = StepLR(optimizer, step_size = 1, gamma=0.1)
+# optimizer = Adam(model.parameters(), learning_rate = 0.01)
+# lr_schedular = StepLR(optimizer, step_size = 1, gamma=0.1)
 
 # model = load_weights(path)
 
@@ -53,7 +60,6 @@ lr_schedular = StepLR(optimizer, step_size = 1, gamma=0.1)
 # save_weights(model, path)
 
 trainingLoss = []
-validationLoss = None
 
 def live_graph():
     """
@@ -68,7 +74,7 @@ def live_graph():
         ax1.cla()
         ax1.plot(np.array(range(len(trainingLoss))) + 1, trainingLoss, label="Training loss")
         plt.legend(loc='upper right')
-    ani = animation.FuncAnimation(fig, animate, interval=1000)
+    ani = FuncAnimation(fig, animate, interval=1000)
     plt.tight_layout()
     plt.xlabel('number of stations trying to send ')
     plt.ylabel('Channel efficiency')
@@ -77,13 +83,14 @@ def live_graph():
 
 
 def main():
-    epochs = 1
+    epochs = 10
+    print("start")
     for epoch in range(epochs):
         i = 0
         for image, label in dataloader:
             # if i == 1700:
             #     break
-            optim.zero_grad()
+            optimizer.zero_grad()
             image = image/255
             i = i + 1
             print("Iteration no.", i)
@@ -102,3 +109,4 @@ live_graph()
 stop_threads = True
 t1.join()
 sys.exit(0)
+
