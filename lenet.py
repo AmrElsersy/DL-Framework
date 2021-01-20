@@ -9,7 +9,7 @@ from cnn import *
 import time
 
 # MNIST Dataset
-batch_size = 2
+batch_size = 1
 dataset = MNIST_dataset("train.csv")
 dataloader = Data_Loader(dataset, batch_size)
 
@@ -32,7 +32,7 @@ lenet.add(Dense(84, 10))
 
 lenet.set_loss(CrossEntropyLoss())
 
-optimizer = GradientDecent(lenet.parameters(), learning_rate=0.1)
+optimizer = GradientDecent(lenet.parameters(), learning_rate=0.01)
 
 epochs = 10
 for epoch in range(epochs):
@@ -40,7 +40,8 @@ for epoch in range(epochs):
     for image, label in dataloader:
         # if i == 1:
         #     break
-
+        images = []
+        
         for batch_idx in range(image.shape[1]):
             img = image[:, batch_idx].reshape(1, 28, 28)
             img = img/255
