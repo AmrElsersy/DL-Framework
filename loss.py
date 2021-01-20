@@ -1,7 +1,7 @@
 import numpy as np
 import sys
 import math
-
+from activation_functions import *
 from abstract_classes import Function
 
 class Loss(Function):
@@ -34,14 +34,8 @@ class CrossEntropyLoss(Loss):
             yhat = (ndim, nbatch)
             y = (1, nbatch)
         """
-        # calculating crossentropy
-        # exp_x = np.maximum(np.exp(Y_hat), np.exp(Y_hat) + 1e-1)
-        max_1 = np.max(Y_hat, axis=0, keepdims=True)
-        max_1 = np.subtract(Y_hat, max_1)
-        exp_x = np.exp(max_1)
-        probs = np.divide(exp_x, np.sum(exp_x, axis=0, keepdims=True))
-
-        print(probs)
+        probs = softMax(Y_hat)
+        # print(probs)
         # print()
         y = Y.T
 

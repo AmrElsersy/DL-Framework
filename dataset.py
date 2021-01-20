@@ -7,7 +7,6 @@ import math
 
 # for loading CIFER-10 dataset
 def unpickle(file):
-    
     with open(file, 'rb') as fo:
         dict = cPickle.load(fo,encoding='bytes')
     return dict

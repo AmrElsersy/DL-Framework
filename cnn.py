@@ -1,7 +1,8 @@
 from abstract_classes import *
 import numpy as np
-from math import sqrt
+from math import sqrt, isnan
 from itertools import product
+
 ###calculate_local_grads in conv
 
 
@@ -69,28 +70,29 @@ class conv(Layer):
                     h_offset, w_offset = h*self.stride, w*self.stride
                     
                     rec_field = X[n, :, h_offset:h_offset + KH, w_offset:w_offset + KW]
-                    #print(rec_field.shape)
-                    #print((self.weight['W'][c_w]).shape)
+                    # print(rec_field.shape)
+                    # print((self.weight['W'][c_w]).shape)
                     Y[n, c_w, h, w] = np.sum(self.weight['W'][c_w]*rec_field) + self.weight['b'][c_w]
+        assert(not isnan(np.max(Y)))
+
         return Y
 
     def backward(self, dY):
         # calculating the global gradient to be propagated backwards
         # TODO: this is actually transpose convolution, move this to a util function
-        #print(dY.shape)
-        # print("conv backward", self.in_channels)
         # print(dY.shape)
-
+        # print("\nConv backward started")
         X = self.cache['X']
         dX = np.zeros_like(X)
         N, C, H, W = dX.shape
         KH, KW = self.kernel_size
-
         for n in range(N):
+            
             for c_w in range(self.out_channels):
+                
                 for h, w in product(range(dY.shape[2]), range(dY.shape[3])):
                     h_offset, w_offset = h * self.stride, w * self.stride
-                    #print("line 91",dY[n, c_w, h, w])
+                    # print("line 91",dY[n, c_w, h, w])
                     dX[n, :, h_offset:h_offset + KH, w_offset:w_offset + KW] += self.weight['W'][c_w] * dY[n, c_w, h, w]
 
         # calculating the global gradient wrt the conv filter weights
@@ -107,55 +109,118 @@ class conv(Layer):
 
         # caching the global gradients of the parameters
         self.weights_global_grads = {'w': dW, 'b': db}
-        if self.padding == 0:
+        # print("Conv backward Ended\n")
+        assert(not isnan(np.max(dX)))
+        if self.padding==0:
             return dX
         else:
             return dX[:, :, self.padding:-self.padding, self.padding:-self.padding]
 
-
-class MaxPool2D(Function):
-    def __init__(self, kernel_size=(2, 2)):
+class AvgPool2D(Function):
+    def __init__(self, kernel_size=(2, 2), stride = 2):
         super().__init__()
         self.kernel_size = (kernel_size, kernel_size) if isinstance(kernel_size, int) else kernel_size
+        self.stride = stride
+        self.input_shape = 0
+        self.grad = 0
+    
+    def forward(self, X):
+        self.input_shape = X.shape
+        N, C, H, W = X.shape
+        KH, KW = self.kernel_size
+
+        self.grad = np.zeros_like(X)
+        out_shape = (N, C, 1 + int((H - KH)/self.stride), 1 + int((W - KW)/self.stride))
+        Y = np.zeros(out_shape)
+        #P = np.zeros_like(X)
+        # for n in range(N):
+        for h, w in product(range(0, out_shape[2]), range(0, out_shape[3])):
+            h_offset, w_offset = h*self.stride, w*self.stride
+            rec_field = X[:, :, h_offset:h_offset+KH, w_offset:w_offset+KW]
+            Y[:, :, h, w] = np.mean(rec_field, axis=(2, 3))
+            self.grad[:, :, h_offset:h_offset+KH, w_offset:w_offset+KW] = (np.ones_like(rec_field) * np.mean(rec_field, axis=(2, 3))[0][0])
+            # for kh, kw in product(range(KH), range(KW)):
+            #     #this contains the mask that will be multiplied to the max value error
+            #     grad[:, :, h_offset+kh, w_offset+kw] = P[:, :, h_offset+kh, w_offset+kw] 
+        # storing the gradient
+        assert(not isnan(np.max(Y)))
+        return Y  
+
+    def backward(self, dY):
+        KH, KW = self.kernel_size
+        N, C, H, W = dY.shape
+
+        for h, w in product(range(0, H), range(0, W)):
+            h_offset, w_offset = h*self.stride, w*self.stride
+            rec_field = self.grad[:, :, h_offset:h_offset+KH, w_offset:w_offset+KW]
+            self.grad[:, :, h_offset:h_offset+KH, w_offset:w_offset+KW] = (np.ones_like(rec_field) * dY[:, :, h, w].reshape(N, C, 1, 1))
+
+        return (self.grad/(self.kernel_size[0]*self.kernel_size[0]))
+
+
+
+class MaxPool2D(Function):
+    def __init__(self, kernel_size=(2, 2), stride = 2):
+        super().__init__()
+        self.kernel_size = (kernel_size, kernel_size) if isinstance(kernel_size, int) else kernel_size
+        self.stride = stride
 
     def forward(self, X):
+        # print("Max_pool forward started\n")
         N, C, H, W = X.shape
         KH, KW = self.kernel_size
 
         grad = np.zeros_like(X)
-        Y = np.zeros((N, C, H//KH, W//KW))
-
+        out_shape = (N, C, 1 + int((H - KH)/self.stride), 1 + int((W - KW)/self.stride))
+        Y = np.zeros(out_shape)
         # for n in range(N):
-        for h, w in product(range(0, H//KH), range(0, W//KW)):
-            h_offset, w_offset = h*KH, w*KW
+        for h, w in product(range(0, out_shape[2]), range(0, out_shape[3])):
+            h_offset, w_offset = h*self.stride, w*self.stride
             rec_field = X[:, :, h_offset:h_offset+KH, w_offset:w_offset+KW]
             Y[:, :, h, w] = np.max(rec_field, axis=(2, 3))
-            for kh, kw in product(range(KH), range(KW)):
-                grad[:, :, h_offset+kh, w_offset+kw] = (X[:, :, h_offset+kh, w_offset+kw] >= Y[:, :, h, w])
+            grad[:, :, h_offset:h_offset+KH, w_offset:w_offset+KW] = (X[:, :, h_offset:h_offset+KH, w_offset:w_offset+KW] >= np.max(rec_field, axis=(2, 3))[0][0])
+            
+            # for kh, kw in product(range(KH), range(KW)):
+            #     #this contains the mask that will be multiplied to the max value error
+            #     grad[:, :, h_offset+kh, w_offset+kw] = (X[:, :, h_offset+kh, w_offset+kw] >= Y[:, :, h, w])
 
         # storing the gradient
         self.local_grads['X'] = grad
-
+        # print("Y", Y.shape)
+        assert(not isnan(np.max(Y)))
+        # print("Max_pool forward ended\n")
         return Y
 
     def backward(self, dY):
-        # print("Maxbool backward")
-        # print(dY.shape)
-        dY = np.repeat(np.repeat(dY, repeats=self.kernel_size[0], axis=2), repeats=self.kernel_size[1], axis=3)
-        #print("line 141",dY)
-        return self.local_grads['X']*dY
+        # print("\nMax_pool backward started")
+        KH, KW = self.kernel_size
+        N, C, H, W = dY.shape
+        for h, w in product(range(0, H), range(0, W)):
+            h_offset, w_offset = h*self.stride, w*self.stride
+            rec_field = self.local_grads['X'][:, :, h_offset:h_offset+KH, w_offset:w_offset+KW]
+            self.local_grads['X'][:, :, h_offset:h_offset+KH, w_offset:w_offset+KW] = (rec_field * dY[:, :, h, w].reshape(N, C, 1, 1))
+        
+        assert(not isnan(np.max(self.local_grads['X'])))
+        # print("Max_pool backward ended\n")
+        return self.local_grads['X']
 
     def calculate_local_grads(self, X):
-        # small hack: because for MaxPool calculating the gradient is simpler during
-        # the forward pass, it is calculated there and this function just returns the
-        # grad dictionary
+        
         return self.local_grads
 
 class Flatten(Function):
     def forward(self, X):
+        # print("\nFlatten forward started")
         self.cache['shape'] = X.shape
         n_batch = X.shape[0]
-        return X.reshape(-1, n_batch)
+        X = X.reshape(-1, n_batch)
+        # print("X", X.shape)
+        assert(not isnan(np.max(X)))
+        # print("Flatten forward ended\n")
+        return X
 
     def backward(self, dY):
-        return dY.reshape(self.cache['shape'])
+        # print("\nFlatten backward started")
+        dY = dY.reshape(self.cache['shape'])
+        assert(not isnan(np.max(dY)))
+        return dY

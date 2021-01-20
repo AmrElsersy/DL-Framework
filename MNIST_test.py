@@ -1,4 +1,4 @@
-from dataset import Dataset, Data_Loader
+from dataset import MNIST_dataset, Dataset, Data_Loader
 from model import Model
 from Linear import Dense
 from optim import GradientDecent, MomentumGD,  Adam, StepLR
@@ -14,20 +14,20 @@ path = "ray2_weights.sav"
 
 # MNIST Dataset
 batch_size = 32
-dataset = Dataset("train.csv")
+dataset = MNIST_dataset("train.csv")
 dataloader = Data_Loader(dataset, batch_size)
-image = dataset[0][0]/255
-image = image.reshape(1,1,28,28)
-print(image)
-ob1 = conv(1, 4, 3)
-mp = MaxPool2D(kernel_size=(2,2))
-ob1.forward(image)
-#ob1.backward(image)
+# image = dataset[0][0]/255
+# image = image.reshape(1,1,28,28)
+# print(image)
+# # ob1 = conv(1, 4, 3)
+# # mp = MaxPool2D(kernel_size=(2,2))
+# # ob1.forward(image)
+# # #ob1.backward(image)
 
-ob1.forward(image)
-mp.forward(image)
-exit()
-#ob1.backward()
+# # ob1.forward(image)
+# # mp.forward(image)
+# # exit()
+# # #ob1.backward()
 
 
 
@@ -47,7 +47,7 @@ model.set_loss(CrossEntropyLoss())
 optimizer = Adam(model.parameters(), learning_rate = 0.01)
 lr_schedular = StepLR(optimizer, step_size = 1, gamma=0.1)
 
-model = load_weights(path)
+# model = load_weights(path)
 
 epochs = 1
 for epoch in range(epochs):
@@ -56,13 +56,12 @@ for epoch in range(epochs):
         # if i == 1700:
         #     break
         image = image/255
-        image = image.reshape(28,28)
         i = i + 1
         print("Iteration no.", i)
         predicted = model(image)
         loss = model.loss(predicted, label)
-        # model.backward()
-        # optimizer.step()
+        model.backward()
+        optimizer.step()
         # print("loss= ", loss)
         # time.sleep(0.1)
         print("===========")
