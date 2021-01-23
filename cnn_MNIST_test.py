@@ -43,14 +43,14 @@ lr_schedular = StepLR(optimizer, step_size = 1, gamma=0.1)
 
 #model = load_weights(path)
 
-epochs = 10
+epochs = 1
 for epoch in range(epochs):
     i = 0
     for image, label in dataloader:
-        # if i == 1700:
-        #     break
+        if i == 1000:
+            break
         image = image/255
-        image = image.reshape(batch_size,1,28,28)
+        image = image.T.reshape(batch_size,1,28,28)
         i = i + 1
         print("Iteration no.", i)
         predicted = model(image)
@@ -58,7 +58,7 @@ for epoch in range(epochs):
         model.backward()
         optimizer.step()
         print("loss= ", loss)
-        #time.sleep(0.1)
+        # time.sleep(0.1)
         print("===========")
-
+print(np.asarray(model.trainingLoss).reshape(-1, 100))
 # save_weights(model, path)

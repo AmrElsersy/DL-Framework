@@ -3,6 +3,7 @@ import pickle as cPickle
 import numpy as np
 import numpy
 import math 
+import random
 
 
 # for loading CIFER-10 dataset
@@ -11,6 +12,10 @@ def unpickle(file):
         dict = cPickle.load(fo,encoding='bytes')
     return dict
 
+def unison_shuffled_copies(a, b):
+    assert len(a) == len(b)
+    p = numpy.random.permutation(len(a))
+    return a[p], b[p]
 
 class Dataset():
 
@@ -62,13 +67,20 @@ class Dataset():
 
 
 class Data_Loader():
-    def __init__(self, dataset,batch_size):
+    def __init__(self, dataset,batch_size, shuffle=0):
         features =[]
         label=[]
         no_batches = math.ceil(dataset.x.shape[1]/batch_size)
 
+
         j = dataset.x.transpose()
         l = dataset.label.transpose()
+
+        if (shuffle == 1):
+            randomize = np.arange(len(l))
+            np.random.shuffle(randomize)
+            l = l[randomize]
+            j = j[randomize]
 
         s= numpy.asarray(np.array_split(j,int(no_batches)))
         b = numpy.asarray(np.array_split(l,int(no_batches)))
@@ -148,8 +160,9 @@ CIFR-10
 # """
 # MNIST 
 # """
-# d= MNIST_dataset('train.csv')
+#d= MNIST_dataset('train1.csv')
 
-#dataloader2=Data_Loader(d,2)
+#dataloader2=Data_Loader(d,2, shuffle=1)
 #for x,y in dataloader2:
-#     print(x.shape)
+#     print(x)
+#     print(y)

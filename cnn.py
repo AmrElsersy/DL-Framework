@@ -84,12 +84,11 @@ class conv(Layer):
         # print("\nConv backward started")
         X = self.cache['X']
         dX = np.zeros_like(X)
+        dX = np.asarray(dX, dtype='float64')
         N, C, H, W = dX.shape
         KH, KW = self.kernel_size
-        for n in range(N):
-            
+        for n in range(N): 
             for c_w in range(self.out_channels):
-                
                 for h, w in product(range(dY.shape[2]), range(dY.shape[3])):
                     h_offset, w_offset = h * self.stride, w * self.stride
                     # print("line 91",dY[n, c_w, h, w])
