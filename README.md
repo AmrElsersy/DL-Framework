@@ -32,7 +32,7 @@ Pyray2 is a deep learning framework implemnted from scratch using python and lib
 - Mean Square Error
 - Cross Entropy 
 
-**How to define a Module:**
+**How to define a Model:**
 ```python
 # Example
 model = Model()
@@ -64,7 +64,8 @@ images = np.asarray(images)
 img_viewer_examples(images, labels.tolist()[0], greyscale= True)
 
 # Plotting Loss
-
+model.graph()
+# Training Loop ...
 ```
 #### Evaluation
 - Precision
