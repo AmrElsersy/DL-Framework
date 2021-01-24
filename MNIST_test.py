@@ -14,7 +14,6 @@ from activation_functions import *
 
 path = "ray2_weights.sav"
 
-
 # MNIST Dataset
 batch_size = 32
 train_dataset = MNIST_dataset("train.csv")
@@ -30,7 +29,6 @@ model.add(ReLU())
 model.add(Dense(45, 10))
 
 model.set_loss(CrossEntropyLoss())
-
 
 optimizer = GradientDecent(model.parameters(), learning_rate = 0.01)
 # optimizer = MomentumGD(model.parameters(), learning_rate = 0.01)
@@ -66,6 +64,7 @@ for image, label in dataloader_test:
     e.add_prediction(pred[np.newaxis],label)
 print("the confusion Matrix :",e.get_confusion_Matrix())
 print("the Mean F1 Score =",e.evaluate())
+
 # save_weights(model, path)
 
 print("Enter any key to exit")

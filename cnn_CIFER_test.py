@@ -13,7 +13,7 @@ path = "ray2_weights.sav"
 
 
 # MNIST Dataset
-batch_size = 1
+batch_size = 32
 dataset = CIFER_10_dataset("datasets", 1)
 dataloader = Data_Loader(dataset, batch_size)
 
