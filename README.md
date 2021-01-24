@@ -13,7 +13,7 @@ Pyray2 is a deep learning framework implemnted from scratch using python and lib
 - [Train on MNIST with Linear Layers](https://colab.research.google.com/drive/1cDJJm6eL--yMaleA0yBactI1qPdslDun)
 - [Train on MNIST with CNN](https://colab.research.google.com/drive/17Fqk_qaEaXLGSRWzSfkjs9GY51D3nGKZ?usp=sharing)
 - [Lenet archeticture](https://colab.research.google.com/drive/1JIeUIpiJrc1Mh2Rc8mIsij-uqRTme04v?usp=sharing)
-### Design
+### UML Design
 ![DL_Framework_UML](https://user-images.githubusercontent.com/35613645/105637853-4ca68500-5e78-11eb-9dc3-33f68bfd1cdf.png)
 
 
