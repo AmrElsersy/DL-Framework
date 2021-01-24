@@ -56,6 +56,7 @@ lr_schedular = StepLR(optimizer, step_size = 1, gamma=0.1)
 #### Visualization 
 - View dataset's examples
 - Plotting for loss
+- live graph
 ```python
 # Show Dataset Examples
 image, labels = dataloader.__getitem__(1)
@@ -66,7 +67,16 @@ img_viewer_examples(images, labels.tolist()[0], greyscale= True)
 # Plotting Loss
 model.graph()
 # Training Loop ...
+
+# Before the loop to start new thread
+model.startGraph()
+
+# Training Loop ...
+
+# After the loop to close the thread
+model.stopGraph()
 ```
+![Linear live graph gif](./media/linear.gif?raw=true "Linear live graph")
 #### Evaluation
 - Precision
 - Recall
