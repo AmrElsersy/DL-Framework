@@ -76,7 +76,7 @@ model.startGraph()
 # After the loop to close the thread
 model.stopGraph()
 ```
-![Linear live graph gif](./media/linear.gif?raw=true "Linear live graph")
+![Linear live graph gif](/Media/linear.gif)
 #### Evaluation
 - Precision
 - Recall
